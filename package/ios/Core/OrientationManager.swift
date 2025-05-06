@@ -49,7 +49,7 @@ final class OrientationManager {
   private var sensorOrientation: Orientation {
     didSet {
       if oldValue != sensorOrientation {
-        VisionLogger.log(level: .debug, message: "Sensor Orientation changed from \(oldValue) -> \(sensorOrientation)")
+        VisionLogger.log(level: .debug, message: "[ME]: Sensor Orientation changed from \(oldValue) -> \(sensorOrientation)")
         maybeUpdateOrientations()
       }
     }
@@ -59,7 +59,7 @@ final class OrientationManager {
   private var interfaceOrientation: Orientation {
     didSet {
       if oldValue != interfaceOrientation {
-        VisionLogger.log(level: .debug, message: "Interface Orientation changed from \(oldValue) -> \(interfaceOrientation)")
+        VisionLogger.log(level: .debug, message: "[ME]: Interface Orientation changed from \(oldValue) -> \(interfaceOrientation)")
         maybeUpdateOrientations()
       }
     }
@@ -69,7 +69,7 @@ final class OrientationManager {
   private var deviceOrientation: Orientation {
     didSet {
       if oldValue != deviceOrientation {
-        VisionLogger.log(level: .debug, message: "Device Orientation changed from \(oldValue) -> \(deviceOrientation)")
+        VisionLogger.log(level: .debug, message: "[ME]: Device Orientation changed from \(oldValue) -> \(deviceOrientation)")
         maybeUpdateOrientations()
       }
     }
@@ -145,6 +145,7 @@ final class OrientationManager {
   }
 
   private func maybeUpdateOrientations() {
+    print("[ME]: maybeUpdateOrientations: previewOrientation=\(previewOrientation); lastPreviewOrientation=\(lastPreviewOrientation); outputOrientation=\(outputOrientation); lastOutputOrientation=\(lastOutputOrientation)")
     if previewOrientation != lastPreviewOrientation {
       // Preview Orientation changed!
       delegate?.onPreviewOrientationChanged(previewOrientation: previewOrientation)

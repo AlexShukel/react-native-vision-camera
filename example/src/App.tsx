@@ -1,17 +1,7 @@
-import { NavigationContainer } from '@react-navigation/native'
-import React from 'react'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { PermissionsPage } from './PermissionsPage'
-import { MediaPage } from './MediaPage'
-import { CameraPage } from './CameraPage'
-import { CodeScannerPage } from './CodeScannerPage'
-import type { Routes } from './Routes'
-import { Camera } from 'react-native-vision-camera'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { StyleSheet } from 'react-native'
-import { DevicesPage } from './DevicesPage'
-
-const Stack = createNativeStackNavigator<Routes>()
+import React, { Fragment, useState } from 'react'
+import { Camera, useCameraDevice } from 'react-native-vision-camera'
+import { Button, StyleSheet, View } from 'react-native'
+import { OrientationLocker, PORTRAIT } from 'react-native-orientation-locker'
 
 export function App(): React.ReactElement | null {
   const cameraPermission = Camera.getCameraPermissionStatus()
@@ -19,32 +9,26 @@ export function App(): React.ReactElement | null {
 
   console.log(`Re-rendering Navigator. Camera: ${cameraPermission} | Microphone: ${microphonePermission}`)
 
-  const showPermissionsPage = cameraPermission !== 'granted' || microphonePermission === 'not-determined'
+  const [open, setOpen] = useState(false)
+
+  const device = useCameraDevice('back')
+  console.log(JSON.stringify(device, (k, v) => k === "formats" ? [] : v, 2))
+
   return (
-    <NavigationContainer>
-      <GestureHandlerRootView style={styles.root}>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-            statusBarStyle: 'dark',
-            animationTypeForReplace: 'push',
-          }}
-          initialRouteName={showPermissionsPage ? 'PermissionsPage' : 'CameraPage'}>
-          <Stack.Screen name="PermissionsPage" component={PermissionsPage} />
-          <Stack.Screen name="CameraPage" component={CameraPage} />
-          <Stack.Screen name="CodeScannerPage" component={CodeScannerPage} />
-          <Stack.Screen
-            name="MediaPage"
-            component={MediaPage}
-            options={{
-              animation: 'none',
-              presentation: 'transparentModal',
-            }}
-          />
-          <Stack.Screen name="Devices" component={DevicesPage} />
-        </Stack.Navigator>
-      </GestureHandlerRootView>
-    </NavigationContainer>
+    <View style={styles.root}>
+      <Button
+        title="open"
+        onPress={() => {
+          setOpen(true)
+        }}
+      />
+      {open && device !== undefined &&
+        <Fragment>
+          <OrientationLocker orientation={PORTRAIT} />
+          <Camera style={StyleSheet.absoluteFill} device={device} isActive outputOrientation="preview" />
+        </Fragment>
+      }
+    </View>
   )
 }
 
